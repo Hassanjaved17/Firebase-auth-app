@@ -1,5 +1,7 @@
 /* ============================================================
    FIREBASE AUTH & DASHBOARD — STYLE.CSS
+   Aesthetic: Dark glass-morphism with amber accents
+   Fonts: DM Serif Display + DM Sans
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
@@ -52,7 +54,7 @@ body::before {
   pointer-events: none;
   z-index: 0;
   opacity: .35;
-  /* background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
 }
 
 body > * { position: relative; z-index: 1; }
@@ -308,4 +310,42 @@ button {
 
   h1 { font-size: 1.65rem; }
   h2 { font-size: 1.25rem; }
+}
+
+/* ---------- Google Button ---------- */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 18px;
+  margin-top: 12px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.google-btn:hover {
+  background: rgba(255, 255, 255, .11);
+  border-color: rgba(255, 255, 255, .2);
+  transform: translateY(-1px);
+}
+
+.google-btn:active {
+  transform: translateY(0);
+  opacity: .88;
+}
+
+.google-btn svg {
+  flex-shrink: 0;
 }
