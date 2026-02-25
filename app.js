@@ -1,12 +1,17 @@
 import { auth } from "./firebase.js";
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Signup
 document.getElementById("signup-btn").addEventListener("click", (e) => {
-    e.preventDefault(); 
+  e.preventDefault();
   const email = document.getElementById("signup-email").value;
   const password = document.getElementById("signup-password").value;
 
@@ -24,7 +29,7 @@ document.getElementById("signup-btn").addEventListener("click", (e) => {
 
 // Login
 document.getElementById("login-btn").addEventListener("click", (e) => {
-    e.preventDefault(); 
+  e.preventDefault();
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
 
@@ -36,6 +41,24 @@ document.getElementById("login-btn").addEventListener("click", (e) => {
     })
     .catch((error) => {
       console.error("Error:", error.message);
+      alert(error.message);
+    });
+});
+
+// Google Sign-In
+const googleBtn = document.getElementById("google-btn");
+
+googleBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  const provider = new GoogleAuthProvider();
+
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      console.log(result.user);
+      window.location.href = "dashboard.html";
+    })
+    .catch((error) => {
+      console.error(error.message);
       alert(error.message);
     });
 });
