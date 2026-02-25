@@ -1,31 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firebase Auth</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<div class="container">
-  <h2>Signup</h2>
-  <form id="signup-form">
-  <input type="email" id="signup-email" placeholder="Enter email">
-  <br><br>
-  <input type="password" id="signup-password" placeholder="Enter password">
-  <br><br>
-  <button id="signup-btn">Sign Up</button>
-  </form>
-  <hr>
 
-  <h2>Login</h2>
-  <form id="login-form">
-  <input type="email" id="login-email" placeholder="Enter email">
-  <br><br>
-  <input type="password" id="login-password" placeholder="Enter password">
-  <br><br>
-  <button id="login-btn">Login</button>
-  </form>
-</div>
+<body>
+
+  <div class="auth-wrapper">
+
+    <!-- ── Signup Section ── -->
+    <div class="auth-section">
+      <h2>Sign Up</h2>
+      <form id="signup-form" novalidate>
+        <input type="email" id="signup-email" placeholder="Email address" autocomplete="email" required>
+        <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password" required>
+        <button type="submit" id="signup-btn">Create Account</button>
+      </form>
+    </div>
+
+    <hr>
+
+    <!-- ── Login Section ── -->
+    <div class="auth-section">
+      <h2>Login</h2>
+      <form id="login-form" novalidate>
+        <input type="email" id="login-email" placeholder="Email address" autocomplete="email" required>
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" required>
+        <button type="submit" id="login-btn">Sign In</button>
+      </form>
+    </div>
+
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
+
 </html>
