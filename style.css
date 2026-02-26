@@ -15,6 +15,7 @@
   --accent:        #fbbf24;
   --accent-glow:   rgba(251, 191, 36, 0.25);
   --danger:        #f87171;
+  --success:       #4ade80;
   --text-primary:  #f1f5f9;
   --text-secondary:#94a3b8;
   --text-muted:    #475569;
@@ -60,7 +61,7 @@ body::before {
 body > * { position: relative; z-index: 1; }
 
 /* ============================================================
-   AUTH PAGE — .auth-wrapper & .auth-section
+   AUTH PAGE
    ============================================================ */
 
 .auth-wrapper {
@@ -138,7 +139,6 @@ form {
   gap: 4px;
 }
 
-/* Kill the leftover <br> tags gracefully */
 br { display: none; }
 
 /* ---------- Inputs ---------- */
@@ -161,14 +161,30 @@ input[type="text"] {
     background var(--transition);
 }
 
-input::placeholder {
-  color: var(--text-muted);
-}
+input::placeholder { color: var(--text-muted); }
 
 input:focus {
   border-color: var(--border-focus);
   background: rgba(251, 191, 36, .04);
   box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Error state on input */
+input.input--error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, .2) !important;
+  background: rgba(248, 113, 113, .04) !important;
+}
+
+/* Inline error message below input */
+.input-error-msg {
+  display: block;
+  font-size: 12.5px;
+  color: var(--danger);
+  margin-top: 5px;
+  margin-bottom: 2px;
+  padding-left: 2px;
+  animation: fadeIn .2s ease both;
 }
 
 /* ---------- Buttons — base ---------- */
@@ -190,16 +206,26 @@ button {
     opacity var(--transition);
 }
 
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 /* Primary buttons */
 #signup-btn,
 #login-btn {
   background: var(--accent);
   color: #0d0f14;
   box-shadow: 0 4px 18px rgba(251, 191, 36, .28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-#signup-btn:hover,
-#login-btn:hover {
+#signup-btn:hover:not(:disabled),
+#login-btn:hover:not(:disabled) {
   background: #fcd34d;
   box-shadow: 0 6px 26px rgba(251, 191, 36, .42);
   transform: translateY(-1px);
@@ -209,107 +235,6 @@ button {
 #login-btn:active {
   transform: translateY(0);
   opacity: .88;
-}
-
-/* ============================================================
-   DASHBOARD PAGE — .dashboard-card
-   ============================================================ */
-
-.dashboard-card {
-  width: 100%;
-  max-width: 460px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  padding: 40px 36px;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, .04) inset,
-    0 32px 64px rgba(0, 0, 0, .55);
-  animation: slideUp .5s cubic-bezier(.22, 1, .36, 1) both;
-}
-
-/* ---------- User Info Panel ---------- */
-#user-info {
-  background: rgba(251, 191, 36, .06);
-  border: 1px solid rgba(251, 191, 36, .2);
-  border-radius: 10px;
-  padding: 20px 22px;
-  font-size: 14.5px;
-  line-height: 1.75;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-}
-
-#user-info p {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  margin-bottom: 6px;
-}
-
-#user-info p:last-child {
-  margin-bottom: 0;
-}
-
-#user-info strong {
-  color: var(--text-primary);
-  font-weight: 600;
-  min-width: 60px;
-}
-
-/* ---------- Logout Button ---------- */
-#logout-btn {
-  background: transparent;
-  border: 1px solid var(--danger);
-  color: var(--danger);
-  box-shadow: none;
-  margin-top: 0;
-}
-
-#logout-btn:hover {
-  background: var(--danger);
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(248, 113, 113, .32);
-  transform: translateY(-1px);
-}
-
-#logout-btn:active {
-  transform: translateY(0);
-  opacity: .88;
-}
-
-/* ============================================================
-   ANIMATION
-   ============================================================ */
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(28px) scale(.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media (max-width: 480px) {
-  .auth-section {
-    padding: 28px 22px 24px;
-  }
-
-  .dashboard-card {
-    padding: 30px 22px;
-  }
-
-  h1 { font-size: 1.65rem; }
-  h2 { font-size: 1.25rem; }
 }
 
 /* ---------- Google Button ---------- */
@@ -335,17 +260,328 @@ button {
     transform var(--transition);
 }
 
-.google-btn:hover {
+.google-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, .11);
   border-color: rgba(255, 255, 255, .2);
   transform: translateY(-1px);
 }
 
-.google-btn:active {
-  transform: translateY(0);
-  opacity: .88;
+.google-btn:active { transform: translateY(0); opacity: .88; }
+.google-btn svg { flex-shrink: 0; }
+
+/* ============================================================
+   SPINNER (loading state inside button)
+   ============================================================ */
+.spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(13, 15, 20, 0.3);
+  border-top-color: #0d0f14;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
 }
 
-.google-btn svg {
+/* Spinner in google-btn is light */
+.google-btn .spinner {
+  border-color: rgba(255,255,255,.25);
+  border-top-color: var(--text-primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.45);
+
+  transition:
+    opacity .3s ease,
+    transform .3s cubic-bezier(.22, 1, .36, 1);
+}
+
+.toast--show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast--success {
+  background: rgba(74, 222, 128, .12);
+  border: 1px solid rgba(74, 222, 128, .3);
+  color: #4ade80;
+}
+
+.toast--error {
+  background: rgba(248, 113, 113, .12);
+  border: 1px solid rgba(248, 113, 113, .3);
+  color: var(--danger);
+}
+
+.toast--info {
+  background: rgba(251, 191, 36, .1);
+  border: 1px solid rgba(251, 191, 36, .25);
+  color: var(--accent);
+}
+
+/* ============================================================
+   DASHBOARD PAGE
+   ============================================================ */
+
+.dashboard-card {
+  width: 100%;
+  max-width: 500px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .04) inset,
+    0 32px 64px rgba(0, 0, 0, .55);
+  animation: slideUp .5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* ---------- Top Bar ---------- */
+.dash-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,.02);
+}
+
+.dash-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  letter-spacing: -.3px;
+  color: var(--text-primary);
+}
+
+.dash-brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ---------- Logout Button ---------- */
+#logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: auto;
+  padding: 8px 14px;
+  margin-top: 0;
+  background: transparent;
+  border: 1px solid rgba(248,113,113,.35);
+  border-radius: 8px;
+  color: var(--danger);
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+#logout-btn:hover:not(:disabled) {
+  background: rgba(248,113,113,.1);
+  border-color: var(--danger);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+#logout-btn:active { transform: translateY(0); opacity: .88; }
+
+/* ---------- Profile Header ---------- */
+.dash-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 28px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #f59e0b);
+  color: #0d0f14;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(251,191,36,.3);
+}
+
+.dash-profile-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-profile-text h1 {
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-email {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-badge {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--success);
+  background: rgba(74,222,128,.1);
+  border: 1px solid rgba(74,222,128,.25);
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+/* ---------- Info Cards Grid ---------- */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px;
+  background: var(--bg-deep);
+  transition: background var(--transition);
+}
+
+.dash-info-card:hover {
+  background: rgba(255,255,255,.03);
+}
+
+.dash-info-icon {
+  color: var(--accent);
+  opacity: .8;
+  margin-bottom: 2px;
+}
+
+.dash-info-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dash-info-value {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ---------- Status Bar ---------- */
+.dash-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.dash-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(74,222,128,.5);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.dash-status-divider {
+  opacity: .4;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .4; }
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 480px) {
+  .auth-section           { padding: 28px 22px 24px; }
+  h2                      { font-size: 1.25rem; }
+  .toast                  { white-space: normal; max-width: calc(100vw - 40px); }
+
+  /* Dashboard responsive */
+  .dash-topbar            { padding: 16px 20px; }
+  .dash-profile           { padding: 22px 20px 20px; gap: 12px; }
+  .dash-profile-text h1   { font-size: 1.1rem; }
+  .dash-grid              { grid-template-columns: 1fr; }
+  .dash-info-card         { padding: 16px 20px; }
+  .dash-status            { padding: 12px 20px; }
 }
