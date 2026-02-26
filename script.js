@@ -6,7 +6,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ── Helper: format date ───────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────
 function formatDate(dateStr) {
   if (!dateStr) return "—";
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -14,64 +14,43 @@ function formatDate(dateStr) {
   });
 }
 
-// ── Helper: get initials from email ──────────────────────────
 function getInitials(email, displayName) {
-  if (displayName) {
-    return displayName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-  }
+  if (displayName) return displayName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   return email ? email[0].toUpperCase() : "?";
 }
 
-// ── Helper: provider label ────────────────────────────────────
 function getProvider(user) {
   if (!user.providerData || user.providerData.length === 0) return "Email";
-  const id = user.providerData[0].providerId;
   const map = {
     "password":   "Email / Password",
     "google.com": "Google",
-    "github.com": "GitHub",
+    "github.com": "GitHub"
   };
-  return map[id] || id;
+  return map[user.providerData[0].providerId] || user.providerData[0].providerId;
 }
 
-// ── Populate dashboard fields ─────────────────────────────────
+// ── Populate dashboard ────────────────────────────────────────
 function populateDashboard(user) {
-  // Avatar initials
-  const initials = getInitials(user.email, user.displayName);
-  document.getElementById("dash-avatar").textContent = initials;
+  document.getElementById("dash-avatar").textContent    = getInitials(user.email, user.displayName);
+  document.getElementById("dash-name").textContent      = user.displayName || user.email.split("@")[0];
+  document.getElementById("dash-email").textContent     = user.email;
+  document.getElementById("info-uid").textContent       = user.uid.slice(0, 16) + "…";
+  document.getElementById("info-provider").textContent  = getProvider(user);
+  document.getElementById("info-created").textContent   = formatDate(user.metadata.creationTime);
+  document.getElementById("info-lastlogin").textContent = formatDate(user.metadata.lastSignInTime);
 
-  // Name & email
-  document.getElementById("dash-name").textContent =
-    user.displayName || user.email.split("@")[0];
-  document.getElementById("dash-email").textContent = user.email;
-
-  // Info cards
-  document.getElementById("info-uid").textContent =
-    user.uid.slice(0, 16) + "…";
-  document.getElementById("info-provider").textContent =
-    getProvider(user);
-  document.getElementById("info-created").textContent =
-    formatDate(user.metadata.creationTime);
-  document.getElementById("info-lastlogin").textContent =
-    formatDate(user.metadata.lastSignInTime);
-
-  // Verification status
+  // Show whitelist status instead of email verification
   const verifiedEl = document.getElementById("info-verified");
-  if (user.emailVerified) {
-    verifiedEl.innerHTML = `<span style="color:var(--success)">✓ Email verified</span>`;
-  } else {
-    verifiedEl.innerHTML = `<span style="color:var(--accent)">⚠ Email not verified</span>`;
-  }
+  verifiedEl.innerHTML = `<span style="color:var(--success)">✓ Whitelisted user</span>`;
 }
 
-// ── Auth state listener ───────────────────────────────────────
+// ── Auth state ────────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
-  if (user) {
-    populateDashboard(user);
-  } else {
-    // Not logged in — redirect to auth page
+  if (!user) {
     window.location.href = "index.html";
+    return;
   }
+  populateDashboard(user);
 });
 
 // ── Logout ────────────────────────────────────────────────────
@@ -86,6 +65,6 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
   } catch (error) {
     console.error("Logout error:", error.message);
     btn.disabled = false;
-    btn.innerHTML = `Logout`;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout`;
   }
 });

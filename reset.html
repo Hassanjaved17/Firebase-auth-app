@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password</title>
+  <link rel="icon" type="image/png" href="./images/favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-section">
+
+      <!-- Form state -->
+      <div id="reset-form-wrap">
+        <h2>Reset Password</h2>
+        <p class="subtitle">Enter your email and we'll send you a reset link.</p>
+
+        <form id="reset-form" novalidate>
+          <input type="email" id="reset-email" placeholder="Email address" autocomplete="email" required>
+          <button type="submit" id="reset-btn">Send Reset Link</button>
+        </form>
+
+        <a href="index.html" class="verify-back-link" style="margin-top:20px; display:inline-flex;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Back to Login
+        </a>
+      </div>
+
+      <!-- Success state (shown after submit) -->
+      <div id="reset-success" class="reset-success" style="display:none;">
+        <div class="reset-success-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <h2 class="verify-title">Check your inbox</h2>
+        <p class="verify-desc">
+          If that email is registered, you'll receive a password reset link shortly.
+        </p>
+        <a href="index.html" class="verify-back-link" style="margin-top: 8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Back to Login
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

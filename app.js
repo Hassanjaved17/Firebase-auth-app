@@ -6,7 +6,8 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  deleteUser
+  deleteUser,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // ============================================================
@@ -18,7 +19,7 @@ const WHITELISTED_EMAILS = [
   "hassandeveloper341@gmail.com",
   "hassanaptech9@gmail.com",
   "ibrahimkhan@gmail.com",
-  "devhassan65@gmail.com"
+  "devhassan65@gmail.com",
   // add more emails here...
 ];
 
@@ -30,7 +31,6 @@ function isWhitelisted(email) {
 // TOAST NOTIFICATION SYSTEM
 // ============================================================
 function showToast(message, type = "info") {
-  // Remove any existing toast
   const existing = document.querySelector(".toast");
   if (existing) existing.remove();
 
@@ -45,11 +45,8 @@ function showToast(message, type = "info") {
 
   toast.innerHTML = `${icons[type] || icons.info}<span>${message}</span>`;
   document.body.appendChild(toast);
-
-  // Trigger entrance
   requestAnimationFrame(() => toast.classList.add("toast--show"));
 
-  // Auto dismiss after 4s
   setTimeout(() => {
     toast.classList.remove("toast--show");
     toast.addEventListener("transitionend", () => toast.remove(), { once: true });
@@ -62,11 +59,11 @@ function showToast(message, type = "info") {
 function setLoading(btn, isLoading) {
   if (isLoading) {
     btn.disabled = true;
-    btn.dataset.originalText = btn.textContent;
+    btn.dataset.originalText = btn.innerHTML;
     btn.innerHTML = `<span class="spinner"></span> Loading...`;
   } else {
     btn.disabled = false;
-    btn.textContent = btn.dataset.originalText || btn.textContent;
+    btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
   }
 }
 
@@ -100,23 +97,24 @@ function clearAllErrors(prefix) {
 // ============================================================
 function friendlyError(code) {
   const map = {
-    "auth/email-already-in-use":    "That email is already registered.",
-    "auth/invalid-email":           "Please enter a valid email address.",
-    "auth/weak-password":           "Password must be at least 6 characters.",
-    "auth/user-not-found":          "No account found with that email.",
-    "auth/wrong-password":          "Incorrect password. Try again.",
-    "auth/invalid-credential":      "Incorrect email or password.",
-    "auth/too-many-requests":       "Too many attempts. Try again later.",
-    "auth/popup-closed-by-user":    "Google sign-in was cancelled.",
-    "auth/network-request-failed":  "Network error. Check your connection.",
+    "auth/email-already-in-use":   "That email is already registered.",
+    "auth/invalid-email":          "Please enter a valid email address.",
+    "auth/weak-password":          "Password must be at least 6 characters.",
+    "auth/user-not-found":         "No account found with that email.",
+    "auth/wrong-password":         "Incorrect password. Try again.",
+    "auth/invalid-credential":     "Incorrect email or password.",
+    "auth/too-many-requests":      "Too many attempts. Try again later.",
+    "auth/popup-closed-by-user":   "Google sign-in was cancelled.",
+    "auth/network-request-failed": "Network error. Check your connection.",
   };
   return map[code] || "Something went wrong. Please try again.";
 }
 
 // ============================================================
-// SIGNUP
+// SIGNUP — only runs on index.html
 // ============================================================
-document.getElementById("signup-form").addEventListener("submit", async (e) => {
+const signupForm = document.getElementById("signup-form");
+if (signupForm) signupForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearAllErrors("signup");
 
@@ -124,12 +122,10 @@ document.getElementById("signup-form").addEventListener("submit", async (e) => {
   const password = document.getElementById("signup-password").value;
   const btn      = document.getElementById("signup-btn");
 
-  // Client-side validation
-  if (!email) return setInputError("signup-email", "Email is required.");
-  if (!password) return setInputError("signup-password", "Password is required.");
+  if (!email)              return setInputError("signup-email", "Email is required.");
+  if (!password)           return setInputError("signup-password", "Password is required.");
   if (password.length < 6) return setInputError("signup-password", "Minimum 6 characters.");
 
-  // Whitelist check BEFORE hitting Firebase
   if (!isWhitelisted(email)) {
     setInputError("signup-email", "This email is not authorized to sign up.");
     showToast("Access denied — email not on the whitelist.", "error");
@@ -153,9 +149,10 @@ document.getElementById("signup-form").addEventListener("submit", async (e) => {
 });
 
 // ============================================================
-// LOGIN
+// LOGIN — only runs on index.html
 // ============================================================
-document.getElementById("login-form").addEventListener("submit", async (e) => {
+const loginForm = document.getElementById("login-form");
+if (loginForm) loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearAllErrors("login");
 
@@ -163,11 +160,9 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
   const password = document.getElementById("login-password").value;
   const btn      = document.getElementById("login-btn");
 
-  // Client-side validation
-  if (!email) return setInputError("login-email", "Email is required.");
+  if (!email)    return setInputError("login-email", "Email is required.");
   if (!password) return setInputError("login-password", "Password is required.");
 
-  // Whitelist check
   if (!isWhitelisted(email)) {
     setInputError("login-email", "This email is not authorized.");
     showToast("Access denied — email not on the whitelist.", "error");
@@ -191,11 +186,12 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 });
 
 // ============================================================
-// GOOGLE SIGN-IN
+// GOOGLE SIGN-IN — only runs on index.html
 // ============================================================
-document.getElementById("google-btn").addEventListener("click", async (e) => {
+const googleBtn = document.getElementById("google-btn");
+if (googleBtn) googleBtn.addEventListener("click", async (e) => {
   e.preventDefault();
-  const btn = document.getElementById("google-btn");
+  const btn      = document.getElementById("google-btn");
   const provider = new GoogleAuthProvider();
 
   setLoading(btn, true);
@@ -204,7 +200,6 @@ document.getElementById("google-btn").addEventListener("click", async (e) => {
     const result = await signInWithPopup(auth, provider);
     const email  = result.user.email;
 
-    // Whitelist check AFTER Google auth — delete account if not allowed
     if (!isWhitelisted(email)) {
       await deleteUser(result.user);
       showToast(`${email} is not authorized to access this app.`, "error");
@@ -212,15 +207,39 @@ document.getElementById("google-btn").addEventListener("click", async (e) => {
       return;
     }
 
-    console.log("Google sign-in:", result.user);
     showToast("Signed in with Google! Redirecting...", "success");
     setTimeout(() => { window.location.href = "dashboard.html"; }, 1200);
   } catch (error) {
     console.error("Google error:", error.code);
-    const msg = friendlyError(error.code);
-    showToast(msg, "error");
+    showToast(friendlyError(error.code), "error");
     setLoading(btn, false);
   }
 });
 
- 
+// ============================================================
+// PASSWORD RESET — only runs on reset.html
+// ============================================================
+const resetForm = document.getElementById("reset-form");
+if (resetForm) {
+  resetForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("reset-email").value.trim();
+    const btn   = document.getElementById("reset-btn");
+
+    if (!email) return setInputError("reset-email", "Email is required.");
+
+    setLoading(btn, true);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      // Silently ignore — prevents email enumeration
+      console.error("Reset error:", error.code);
+    } finally {
+      // Always show success regardless (security best practice)
+      document.getElementById("reset-form-wrap").style.display = "none";
+      document.getElementById("reset-success").style.display   = "flex";
+    }
+  });
+}
