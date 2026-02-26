@@ -189,7 +189,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-Built with ❤️ by **[Hassan Javed](https://github.com/Hassanjaved17)**
+Built with ❤️ by **[Hassan Javed](https://hassanjaveds.netlify.app/)**
 
 ⭐ Star this repo if you found it useful!
 
