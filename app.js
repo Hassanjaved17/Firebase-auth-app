@@ -243,3 +243,7 @@ if (resetForm) {
     }
   });
 }
+
+// © 2026 Hassan Javed.
+// This repository is publicly viewable for learning purposes.
+// Re-uploading or presenting it as your own work is not permitted.

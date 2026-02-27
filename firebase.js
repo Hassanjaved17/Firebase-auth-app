@@ -15,7 +15,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-
 export const auth = getAuth(app);
+
+// © 2026 Hassan Javed.
+// This repository is publicly viewable for learning purposes.
+// Re-uploading or presenting it as your own work is not permitted.
 
